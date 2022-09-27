@@ -3,6 +3,8 @@ let express = require("express")
 const mongoose = require('mongoose');
 // import mongoose from 'mongoose';
 
+const User = require('./models/users.js')
+
 
 
 const app = express()
@@ -19,13 +21,13 @@ mongoose.connect('mongodb://localhost:27017/exampleDB')
     });
 
 //資料定義期限制
-const exampleSchema = new mongoose.Schema({
-    name:String,
-    age:Number
-})    
+// const exampleSchema = new mongoose.Schema({
+//     name:String,
+//     age:Number
+// })    
 
 //為資料定義限制
-const Example = mongoose.model("Example", exampleSchema)
+// const Example = mongoose.model("Example", exampleSchema)
 
 //定義資料
 // const John = new Example({
@@ -44,24 +46,38 @@ const Example = mongoose.model("Example", exampleSchema)
 //     })
 
 //查找資料
-Example.find({}).then((data)=>{
-    console.log(data)
-})
+// Example.find({}).then((data)=>{
+//     console.log(data)
+// })
 
 app.use(express.urlencoded({ extended: true }))//收Form data 用 (POST)
 
 
-app.get('/testGet',function(request, response){
+app.post('/signUp',function(request, response){
     response.setHeader('Access-Control-Allow-Origin','*')
-    // response.send("Hello EXPRESS by GET")
-    console.log(request.query)//GET時拿Form data
-})
-
-app.post('/testPost',function(request, response){
-    response.setHeader('Access-Control-Allow-Origin','*')
-    // response.send("Hello EXPRESS by POST")
+    let {username, password} = request.body
+    let newUser = new User({username, password})
+    newUser.save()
+        .then(()=>{
+            response.redirect('http://localhost:8080/#/member')
+        }).catch((e)=>{
+            response.status(500).json({ msg: 'error', error:e })
+        })
     console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
 })
+
+
+// app.get('/testGet',function(request, response){
+//     response.setHeader('Access-Control-Allow-Origin','*')
+//     // response.send("Hello EXPRESS by GET")
+//     console.log(request.query)//GET時拿Form data
+// })
+
+// app.post('/testPost',function(request, response){
+//     response.setHeader('Access-Control-Allow-Origin','*')
+//     // response.send("Hello EXPRESS by POST")
+//     console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
+// })
 
 // app.all('/server', function(request, response){
 //     response.setHeader('Access-Control-Allow-Origin','*')
