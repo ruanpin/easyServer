@@ -125,6 +125,10 @@ app.post('/signIn',async function(request, response){
     // console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
 })
 
+app.post('/buyAction',async function(request, response) {
+    response.status(200).json({ msg:'test' })
+})
+
 // app.get('/testGet',function(request, response){
 //     response.setHeader('Access-Control-Allow-Origin','*')
 //     // response.send("Hello EXPRESS by GET")

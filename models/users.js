@@ -9,8 +9,30 @@ const userSchema = new mongoose.Schema({
     },
     token:{
         type:String
+    },
+    cartProducts:{
+        type:Array,
+            items: {
+                type:Object,
+                properties:{
+                    id:{
+                        type:String
+                     },
+                     amount:{
+                         type:Number
+                     },
+                     check:{
+                         type:Boolean
+                     },
+                     price:{
+                         type:String
+                     }
+                },
+            }
     }
+        
 });
+// const cartProducts = [{id: "19", amount: 1, check: false, price: "3,680"}]
 
 const User = mongoose.model('User', userSchema);
 
