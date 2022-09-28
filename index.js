@@ -9,7 +9,9 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 let cookieParser = require('cookie-parser')
-let session = require('express-session')
+// let session = require('express-session')
+
+const jwt = require('jsonwebtoken')
 
 let bodyParser = require('body-parser')
 
@@ -36,44 +38,14 @@ mongoose.connect('mongodb://localhost:27017/exampleDB')
         console.log(err)
     });
 
-//資料定義期限制
-// const exampleSchema = new mongoose.Schema({
-//     name:String,
-//     age:Number
-// })    
-
-//為資料定義限制
-// const Example = mongoose.model("Example", exampleSchema)
-
-//定義資料
-// const John = new Example({
-//     name:'John',
-//     age : 26
-// })
-
-// 加入新資料
-// John.save()
-//     .then(()=>{
-//         console.log('has been saved')
-//     })
-//     .catch((e)=>{
-//         console.log('error save')
-//         console.log(e)
-//     })
-
-//查找資料
-// Example.find({}).then((data)=>{
-//     console.log(data)
-// })
 
 app.use(express.urlencoded({ extended: true }))//收Form data 用 (POST)
 app.use((request,response,next)=>{
-	console.log('有人请求服务器了');
-	console.log(request.url);
+	console.log('伺服器被請求了   ','被請求的router:',request.url);
 	next()
 })
 
-debugger
+
 app.post('/signUp',async function(request, response){
     response.setHeader('Access-Control-Allow-Origin','*')
     let {username, password} = request.body
@@ -85,7 +57,7 @@ app.post('/signUp',async function(request, response){
     try{
         let foundUser = await User.findOne({username})
         if(foundUser){
-            // response.send('username has been taken.')
+            response.status(200).json({ msg:'註冊失敗，使用者名稱已存在', success:false })
         } else {
             bcrypt.genSalt(saltRounds, (err, salt)=>{
                 bcrypt.hash(password, salt, (err, hash)=>{
@@ -93,8 +65,7 @@ app.post('/signUp',async function(request, response){
                     try {
                         newUser.save()
                             .then(()=>{
-                                // response.redirect('http://localhost:8080/#/member')
-                                response.status(200).json({ msg:'註冊成功' })
+                                response.status(200).json({ msg:'註冊成功', success:true })
                                 
                             }).catch((e)=>{
                                 response.status(500).json({ msg: 'error', error:e })
@@ -115,23 +86,32 @@ app.post('/signUp',async function(request, response){
 app.post('/signIn',async function(request, response){
     response.setHeader('Access-Control-Allow-Origin','*')
     let {username, password} = request.body
+    let SECRET = 'newToken'
     try {
-        let foundUser = await User.findOne({
-            username
-        })
+        let foundUser = await User.findOne({username})
         if (foundUser) {
-            bcrypt.compare(password, foundUser.password, (err, result)=>{
+            bcrypt.compare(password, foundUser.password, async (err, result)=>{
                 if (err) {
                     
                 }
-                if (result ===true) {
-                    response.json({username})
+                if (result === true) {
+                    if(foundUser.token) {
+                        response.status(200).json({ login_msg:'登入成功', login_success:true, token:foundUser.token })
+                        return
+                    }
+                    const token = jwt.sign({ _id: foundUser._id.toString() }, SECRET)
+                    foundUser.token = token
+                    foundUser = await foundUser.save()
+                    // response.json({username})
+                    response.status(200).json({ login_msg:'登入成功', login_success:true, token:foundUser.token })
+
                 } else {
-                    response.send('Username or password is incorrect.')
+                    response.status(200).json({ login_msg:'登入失敗，帳號或密碼錯誤', login_success:false})
+                    
                 }
             })
         } else {
-            response.send('Username or password is incorrect.')
+            response.status(200).json({ login_msg:'登入失敗，帳號或密碼錯誤', login_success:false})
         }
     } catch (e){
 
