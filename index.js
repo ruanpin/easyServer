@@ -58,6 +58,7 @@ app.post('/signUp',async function(request, response){
         let foundUser = await User.findOne({username})
         if(foundUser){
             response.status(200).json({ msg:'註冊失敗，使用者名稱已存在', success:false })
+            console.log('註冊失敗',foundUser.username,'已有人使用')
         } else {
             bcrypt.genSalt(saltRounds, (err, salt)=>{
                 bcrypt.hash(password, salt, (err, hash)=>{
@@ -66,12 +67,14 @@ app.post('/signUp',async function(request, response){
                         newUser.save()
                             .then(()=>{
                                 response.status(200).json({ msg:'註冊成功', success:true })
-                                
+                                console.log('新用戶',newUser.username,'註冊成功')
                             }).catch((e)=>{
                                 response.status(500).json({ msg: 'error', error:e })
+                                console.log('用戶',newUser.username,'註冊失敗')
                             })
                     } catch (err){
                         console.log(err)
+                        console.log('註冊失敗')
                     }   
                 })
             })
@@ -80,7 +83,7 @@ app.post('/signUp',async function(request, response){
 
     }
     
-    console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
+    // console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
 })
 
 app.post('/signIn',async function(request, response){
@@ -92,11 +95,12 @@ app.post('/signIn',async function(request, response){
         if (foundUser) {
             bcrypt.compare(password, foundUser.password, async (err, result)=>{
                 if (err) {
-                    
+                    console.log('登入失敗:',err)
                 }
                 if (result === true) {
                     if(foundUser.token) {
                         response.status(200).json({ login_msg:'登入成功', login_success:true, token:foundUser.token })
+                        console.log(foundUser.username,'登入了')
                         return
                     }
                     const token = jwt.sign({ _id: foundUser._id.toString() }, SECRET)
@@ -104,7 +108,7 @@ app.post('/signIn',async function(request, response){
                     foundUser = await foundUser.save()
                     // response.json({username})
                     response.status(200).json({ login_msg:'登入成功', login_success:true, token:foundUser.token })
-
+                    console.log(foundUser.username,'登入了')
                 } else {
                     response.status(200).json({ login_msg:'登入失敗，帳號或密碼錯誤', login_success:false})
                     
@@ -112,12 +116,13 @@ app.post('/signIn',async function(request, response){
             })
         } else {
             response.status(200).json({ login_msg:'登入失敗，帳號或密碼錯誤', login_success:false})
+            console.log('登入失敗',foundUser.username,'帳密錯誤')
         }
     } catch (e){
 
     }
 
-    console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
+    // console.log('收到的整個Data:',request.body,'username:',request.body.username) //POST時拿Form data
 })
 
 // app.get('/testGet',function(request, response){
