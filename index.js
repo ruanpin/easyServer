@@ -138,15 +138,20 @@ app.post('/buyAction',async function(request, response) {
         buyList:buyList,
         totalPrice:totalPrice
     }
-
-    let foundUser = await User.findOne({token})
-    if (foundUser) {
-        foundUser.order.push(buyInfo)
-        foundUser = await foundUser.save()
-        response.status(200).json({ msg:'訂單成功', order_success:true})
-        console.log(foundUser.username+' 訂單交易成功')
+    try {
+        let foundUser = await User.findOne({token})
+        if (foundUser) {
+            foundUser.order.push(buyInfo)
+            foundUser = await foundUser.save()
+            response.status(200).json({ msg:'訂單成功', order_success:true})
+            console.log(foundUser.username+' 訂單交易成功')
+        } else {
+            response.status(200).json({ msg:'交易失敗，請聯絡server管理員', order_success:false})
+            console.log('交易失敗')
+        }
+    } catch(e) {
+        console.log('發生錯誤:',e)
     }
-
 })
 
 // app.get('/testGet',function(request, response){
