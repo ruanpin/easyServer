@@ -1,35 +1,38 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    username:{
-        type:String,
-    },
-    password:{
-        type:String,
-    },
-    token:{
-        type:String
-    },
-    cartProducts:{
-        type:Array,
-            items: {
-                type:Object,
-                properties:{
-                    id:{
-                        type:String
-                     },
-                     amount:{
-                         type:Number
-                     },
-                     check:{
-                         type:Boolean
-                     },
-                     price:{
-                         type:String
-                     }
-                },
-            }
-    }
+    username:String,
+    password:String,
+    token:String,
+    order:[{
+        buyList:[{
+            id:String,
+            amount:Number,
+            check:Boolean,
+            price:String,
+        }],
+        totalPrice:String,
+    }],
+    // cartProducts:{
+    //     type:Array,
+    //         items: {
+    //             type:Object,
+    //             properties:{
+    //                 id:{
+    //                     type:String
+    //                  },
+    //                  amount:{
+    //                      type:Number
+    //                  },
+    //                  check:{
+    //                      type:Boolean
+    //                  },
+    //                  price:{
+    //                      type:String
+    //                  }
+    //             },
+    //         }
+    // }
         
 });
 // const cartProducts = [{id: "19", amount: 1, check: false, price: "3,680"}]

@@ -88,7 +88,7 @@ app.post('/signUp',async function(request, response){
 
 app.post('/signIn',async function(request, response){
     response.setHeader('Access-Control-Allow-Origin','*')
-    let {username, password} = request.body
+    let {username, password, cartList} = request.body
     let SECRET = 'newToken'
     try {
         let foundUser = await User.findOne({username})
@@ -98,11 +98,18 @@ app.post('/signIn',async function(request, response){
                     console.log('登入失敗:',err)
                 }
                 if (result === true) {
+                    //登入成功
+                    // let cartListInDB = foundUser.cartProducts
+                    // let cartListInfront = cartList
                     if(foundUser.token) {
+                        //若有token則不再給予
                         response.status(200).json({ login_msg:'登入成功', login_success:true, token:foundUser.token })
                         console.log(foundUser.username,'登入了')
+                        // console.log(cartList)
+                        // foundUser.cartProducts
                         return
                     }
+                    //給予該user token
                     const token = jwt.sign({ _id: foundUser._id.toString() }, SECRET)
                     foundUser.token = token
                     foundUser = await foundUser.save()
@@ -126,7 +133,28 @@ app.post('/signIn',async function(request, response){
 })
 
 app.post('/buyAction',async function(request, response) {
-    response.status(200).json({ msg:'test' })
+    let {token,buyList,totalPrice} = request.body
+    let buyInfo = {
+        buyList:buyList,
+        totalPrice:totalPrice
+    }
+    // console.log(buyInfo)
+    let foundUser = await User.findOne({token})
+    if (foundUser) {
+        foundUser.order.push(buyInfo)
+        foundUser = await foundUser.save()
+        response.status(200).json({ msg:'訂單成功', order_success:true})
+    }
+    
+    
+    // console.log(foundUser)
+    
+    // foundUser.order.buyList = buyList
+    // foundUser.order.totalPrice = totalPrice
+
+    console.log('after adding',foundUser)
+
+
 })
 
 // app.get('/testGet',function(request, response){
