@@ -138,22 +138,14 @@ app.post('/buyAction',async function(request, response) {
         buyList:buyList,
         totalPrice:totalPrice
     }
-    // console.log(buyInfo)
+
     let foundUser = await User.findOne({token})
     if (foundUser) {
         foundUser.order.push(buyInfo)
         foundUser = await foundUser.save()
         response.status(200).json({ msg:'訂單成功', order_success:true})
+        console.log(foundUser.username+' 訂單交易成功')
     }
-    
-    
-    // console.log(foundUser)
-    
-    // foundUser.order.buyList = buyList
-    // foundUser.order.totalPrice = totalPrice
-
-    console.log('after adding',foundUser)
-
 
 })
 
