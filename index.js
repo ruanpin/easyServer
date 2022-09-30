@@ -159,7 +159,6 @@ app.post('/getOrderHistory',async function(request, response) {
     // console.log('SIGNUP.body',request.body)
     // console.log('SIGNUP.query',request.query)
     // console.log('SIGNUP.params',request.params)
-
     try {
         //先查找該token是哪位使用者
         let foundUser = await User.findOne({token})
