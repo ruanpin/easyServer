@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
             amount:Number,
             check:Boolean,
             price:String,
+            imgUrl:String,
+            name:String,
         }],
         totalPrice:String,
     }],
