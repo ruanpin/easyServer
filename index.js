@@ -154,6 +154,30 @@ app.post('/buyAction',async function(request, response) {
     }
 })
 
+app.post('/getOrderHistory',async function(request, response) {
+    let {token} =request.body
+    // console.log('SIGNUP.body',request.body)
+    // console.log('SIGNUP.query',request.query)
+    // console.log('SIGNUP.params',request.params)
+
+    try {
+        //先查找該token是哪位使用者
+        let foundUser = await User.findOne({token})
+        let targetOrders = foundUser.order||null
+        if (foundUser.order.length) {
+            //若有訂單則返回訂單
+            response.status(200).json({ msg:'查詢訂單成功', getOrders_success:true, targetOrders})
+            console.log(`查詢訂單成功，已返回${foundUser.username}的訂單紀錄`)
+        } else {
+            //若無訂單則返回null
+            response.status(200).json({ msg:'查無訂單', getOrders_success:true, targetOrders})
+            console.log(`查詢訂單成功，目前${foundUser.username}無訂單`)
+        }
+    } catch(e) {
+        console.log('發生錯誤:',e)
+    }
+})
+
 // app.get('/testGet',function(request, response){
 //     response.setHeader('Access-Control-Allow-Origin','*')
 //     // response.send("Hello EXPRESS by GET")
@@ -175,6 +199,19 @@ app.post('/buyAction',async function(request, response) {
 //     let str = JSON.stringify(data)
 //     response.send(str)
 // })
+
+
+// ----------------------------------------------------筆記------------------------------------------------------------
+// 後端express用get且request.query接收，
+// 且後端路由為app.get('/getOrderHistory',async function(request, response)時:
+// export const reqGetOrderHistory = token => localDBRequest.get('/member/getOrderHistory',{params:{token}});
+
+// 後端express用get且request.params接收，
+// 且後端路由為app.get('/getOrderHistory/:token',async function(request, response)時:
+// export const reqGetOrderHistory = token => localDBRequest.get(`/member/getOrderHistory/${token}`);
+
+// 後端express用post且request.body接收:
+// export const reqGetOrderHistory = token => localDBRequest.get('/member/getOrderHistory', {token});
 
 app.listen(5000,()=>{
     console.log("已啟動，5000端口監聽中")
