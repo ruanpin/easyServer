@@ -7,7 +7,7 @@
 
 僅提供作品集使用，不做任何商業性質用途
 
-前端電子商務網站Github : https://github.com/ruanpin/e-commercial
+> 前端網站Github : https://github.com/ruanpin/e-commercial
 
 ## 功能
 <ul>
