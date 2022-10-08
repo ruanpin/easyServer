@@ -137,7 +137,7 @@ app.post('/buyAction',async function(request, response) {
     let buyInfo = {
         buyList:buyList,
         totalPrice:totalPrice,
-        date:Date.parse(new Date())
+        date:Number(Date.parse(new Date()))
     }
     try {
         //找User

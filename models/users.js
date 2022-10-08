@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
             name:String,
         }],
         totalPrice:String,
-        date:String
+        date:Number
     }],
     // cartProducts:{
     //     type:Array,
