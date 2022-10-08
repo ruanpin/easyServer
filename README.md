@@ -21,6 +21,7 @@
 
 <ul>
     <li>Express - 後端Server框架 for Node.js </li>
+    <li>MongoDB - 資料庫 </li>
     <li>mongoose - 作為在Node.js環境中連接至MongoDB的library </li>
     <li>bcrypt - 使用者密碼加密 </li>    
     <li>jsonwebtoken - 生成token </li>
